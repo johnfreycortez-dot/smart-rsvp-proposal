@@ -1,0 +1,657 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Smart RSVP for Invitationix</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Figtree:wght@400;500;600;700&family=Pinyon+Script&display=swap">
+<style>
+/* Layout: an invitation that opens into a single centred column of "cards" on blush paper; one live phone demo is the centrepiece.
+   Deliberately single-theme (stationery look), colors set explicitly. */
+:root{
+  --paper:#f8ecea;      /* blush paper ground */
+  --card:#fffaf7;       /* invitation card stock */
+  --ink:#3a272c;        /* plum-brown ink */
+  --muted:#8b7176;      /* soft ink */
+  --rose:#b0566a;       /* accent: dusty rose */
+  --rose-soft:#f2d3d8;  /* rose wash */
+  --gold:#b9975e;       /* foil */
+  --line:#ead6d6;       /* hairline */
+  --good:#2f7d50; --good-bg:#e6f3ea; --warn:#9a6a00; --warn-bg:#fcf1d8; --info:#2d5bd0; --info-bg:#e8eefc;
+  --display:"Lora",Georgia,"Times New Roman",serif;
+  --script:"Pinyon Script","Snell Roundhand","Apple Chancery",cursive;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--body);margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  background-image:radial-gradient(circle at 20% 0%,#fbf3f1 0,transparent 45%),radial-gradient(circle at 90% 30%,#f5e0df 0,transparent 40%)}
+.wrap{max-width:1040px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.01em;text-wrap:balance;margin:0;color:var(--ink)}
+h2{font-size:clamp(28px,4.4vw,42px);line-height:1.12}
+h3{font-size:21px;line-height:1.25}
+p{margin:0}
+.eyebrow{font:600 11.5px var(--body);letter-spacing:.24em;text-transform:uppercase;color:var(--rose)}
+.lead{font-size:17.5px;color:var(--muted);max-width:62ch}
+.script{font-family:var(--script);font-weight:400;color:var(--rose)}
+section{padding-block:72px}
+.head{display:grid;gap:12px;margin-bottom:34px;max-width:720px}
+.rule{display:flex;align-items:center;gap:14px;color:var(--gold);justify-content:center;padding-block:8px}
+.rule:before,.rule:after{content:"";height:1px;width:min(140px,30vw);background:linear-gradient(90deg,transparent,var(--gold))}
+.rule:after{transform:scaleX(-1)}
+.btn{appearance:none;border:0;cursor:pointer;font:600 12.5px var(--body);letter-spacing:.16em;text-transform:uppercase;border-radius:12px;padding:14px 20px;background:var(--rose);color:#fff;transition:transform .2s,box-shadow .2s,background .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(176,86,106,.28)}
+.btn.ghost{background:transparent;color:var(--rose);box-shadow:inset 0 0 0 1.5px var(--rose)}
+.btn:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* ---------- HERO / ENVELOPE ---------- */
+.hero{padding-block:48px 24px;display:grid;justify-items:center;text-align:center;gap:22px}
+.env{position:relative;width:min(560px,100%);aspect-ratio:1.55;max-width:100%;margin-top:150px}
+.env-back{position:absolute;inset:0;background:#e9b9be;border-radius:10px;box-shadow:0 30px 60px rgba(120,50,65,.22)}
+.letter{position:absolute;left:6%;right:6%;top:6%;bottom:6%;background:var(--card);border-radius:6px;
+  box-shadow:0 6px 18px rgba(80,30,40,.12);display:grid;align-content:center;justify-items:center;gap:6px;padding:18px;
+  transform:translateY(-62%);transition:transform 1.3s cubic-bezier(.2,.8,.2,1) .55s;z-index:2}
+.letter .small{font:600 10.5px var(--body);letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+.letter .script{font-size:clamp(42px,9vw,74px);line-height:1}
+.letter .for{font-family:var(--display);font-style:italic;font-size:clamp(15px,2.4vw,19px);color:var(--ink)}
+.env-front{position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:10px;overflow:hidden}
+.env-front:before,.env-front:after{content:"";position:absolute;bottom:0;width:60%;height:100%;background:#efc7cb}
+.env-front:before{left:0;clip-path:polygon(0 0,100% 100%,0 100%)}
+.env-front:after{right:0;clip-path:polygon(100% 0,100% 100%,0 100%);background:#ecc0c5}
+.env-bottom{position:absolute;inset:auto 0 0 0;height:58%;z-index:4;clip-path:polygon(0 100%,50% 18%,100% 100%);background:#f3d0d3;border-radius:0 0 10px 10px}
+.flap{position:absolute;inset:0 0 auto 0;height:58%;z-index:1;transform-origin:top;transform:rotateX(180deg);
+  clip-path:polygon(0 0,100% 0,50% 100%);background:#e3abb2;transition:transform .7s ease,z-index 0s .35s}
+.seal{position:absolute;left:50%;top:52%;width:62px;height:62px;margin:-31px;border-radius:50%;z-index:5;
+  background:radial-gradient(circle at 35% 30%,#d4788a,#a2475b 70%);box-shadow:0 3px 8px rgba(80,20,35,.35),inset 0 0 0 4px rgba(255,255,255,.12);
+  display:grid;place-items:center;color:#fbe3e6;font:400 26px var(--script);transition:opacity .4s ease .2s,transform .5s ease}
+/* closed state applied by JS before animating; resting (no-JS) state is open */
+.env.closed .flap{transform:rotateX(0);z-index:6;transition:none}
+.env.closed .letter{transform:translateY(0);transition:none}
+.env.closed .seal{opacity:1}
+.env:not(.closed) .seal{opacity:0;transform:scale(.6)}
+.hero-copy{display:grid;gap:14px;justify-items:center;max-width:660px}
+.hero h1{font-size:clamp(34px,6vw,58px);line-height:1.05}
+.hero h1 em{font-style:italic;color:var(--rose)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{font:500 13px var(--body);padding:7px 13px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--ink)}
+.toc{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;font:500 13.5px var(--body)}
+.toc a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent}
+.toc a:hover{color:var(--rose);border-color:var(--rose)}
+
+/* ---------- COMPARE ---------- */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.side{border-radius:18px;padding:26px;display:grid;gap:14px;align-content:start}
+.side.old{background:transparent;border:1.5px dashed #d9c3c4}
+.side.new{background:var(--card);border:1px solid var(--line);box-shadow:0 18px 40px rgba(120,60,70,.1)}
+.side h3{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.side .tag{font:600 11px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.side ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.side li{display:grid;grid-template-columns:22px 1fr;gap:10px;font-size:15.5px}
+.side li i{font-style:normal;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font:700 12px var(--body);margin-top:2px}
+.old li i{background:#f1e4e4;color:#a5878c}
+.new li i{background:var(--good-bg);color:var(--good)}
+.old li{color:var(--muted)}
+
+/* ---------- DEMO ---------- */
+.demo{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:center}
+.demo-notes{display:grid;gap:18px}
+.note{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:start;padding:14px 16px;border-radius:14px;transition:background .3s}
+.note.on{background:var(--card);box-shadow:0 8px 24px rgba(120,60,70,.08)}
+.note b{display:block;font:600 15.5px var(--body)}
+.note span{color:var(--muted);font-size:14.5px}
+.note .n{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--gold);color:var(--gold);display:grid;place-items:center;font:500 16px var(--display)}
+.note.on .n{background:var(--rose);border-color:var(--rose);color:#fff}
+.phone{width:330px;max-width:100%;height:670px;border-radius:46px;background:#231a1d;padding:11px;box-shadow:0 40px 80px rgba(90,40,50,.3);position:relative}
+.screen{position:relative;height:100%;border-radius:36px;overflow:hidden;background:linear-gradient(180deg,#fbf2f0,#f5e1e2)}
+.island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:96px;height:26px;border-radius:14px;background:#231a1d;z-index:3}
+.urlbar{position:absolute;top:44px;left:14px;right:14px;height:28px;border-radius:9px;background:rgba(255,255,255,.85);font:500 11px var(--body);color:#6a5a5d;display:flex;align-items:center;justify-content:center;gap:5px;z-index:2}
+.pane{position:absolute;inset:82px 0 0 0;padding:14px 22px 22px;text-align:center;overflow:auto;transition:opacity .35s,transform .35s}
+.pane[hidden]{display:none}
+.pane.enter{animation:paneIn .45s ease both}
+@keyframes paneIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+.p-small{font:600 9.5px var(--body);letter-spacing:.28em;text-transform:uppercase;color:var(--rose)}
+.p-names{font:400 52px/0.95 var(--script);color:var(--rose)}
+.p-amp{font:400 30px/1 var(--script);color:var(--rose)}
+.p-date{font:400 14px var(--display);letter-spacing:.22em;margin-top:6px}
+.p-banner{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:italic 400 14px/1.4 var(--display);color:#6e5157;margin:12px 0 4px}
+.p-label{text-align:left;font:600 9.5px var(--body);letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+.p-input{width:100%;height:44px;border-radius:11px;border:1.5px solid #dca6b0;background:#fff;padding:0 12px;font:500 15px var(--body);color:var(--ink)}
+.p-msg{margin-top:8px;font:500 12.5px/1.35 var(--body);border-radius:9px;padding:8px 10px;text-align:left;min-height:34px}
+.p-msg.ok{background:var(--good-bg);color:var(--good)}
+.p-msg.no{background:#f7e4e4;color:#9a4a55}
+.p-btn{width:100%;margin-top:12px;height:46px;border-radius:12px;border:0;background:var(--rose);color:#fff;font:600 11.5px var(--body);letter-spacing:.2em;cursor:pointer}
+.p-btn[disabled]{opacity:.45;cursor:not-allowed}
+.p-btn.ghost{background:transparent;color:var(--rose);box-shadow:inset 0 0 0 1.5px var(--rose)}
+.p-hint{font:400 11px var(--body);color:var(--muted);margin-top:8px}
+.seats{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px}
+.seats .num{font:500 54px/1 var(--display);color:var(--rose)}
+.seats em{font:italic 400 14.5px var(--display);color:#6e5157}
+.guest{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #f0dfdf;border-radius:11px;padding:9px 10px;margin-bottom:7px;width:100%;cursor:pointer;font:inherit;color:inherit;text-align:left}
+.guest .gn{font:500 13.5px var(--body);white-space:nowrap;transition:color .2s}
+.guest .gs{display:flex;align-items:center;gap:7px;font:600 8.5px var(--body);letter-spacing:.06em;color:var(--rose);white-space:nowrap}
+.sw{width:36px;height:21px;border-radius:11px;background:var(--rose);position:relative;transition:background .25s;flex:none}
+.sw:after{content:"";position:absolute;top:2px;left:17px;width:17px;height:17px;border-radius:50%;background:#fff;transition:left .25s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.guest[aria-pressed="false"] .sw{background:#d9cfd0}
+.guest[aria-pressed="false"] .sw:after{left:2px}
+.guest[aria-pressed="false"] .gn{color:#b9a9ac;text-decoration:line-through}
+.guest[aria-pressed="false"] .gs{color:#a89a9c}
+.p-deadline{margin-top:10px;background:var(--rose);color:#fff;border-radius:11px;padding:7px;font:600 9.5px var(--body);letter-spacing:.2em}
+.p-deadline b{display:block;font:400 16px var(--display);letter-spacing:0}
+.spinner{width:34px;height:34px;border-radius:50%;border:3px solid var(--rose-soft);border-top-color:var(--rose);animation:spin .8s linear infinite;margin:150px auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.check{width:66px;height:66px;border-radius:50%;background:var(--good-bg);color:var(--good);display:grid;place-items:center;font:700 30px var(--body);margin:18px auto 6px;animation:pop .5s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+.sum{background:#fff;border:1px solid #f0dfdf;border-radius:12px;padding:8px 12px;margin-top:12px;text-align:left}
+.sum div{display:flex;justify-content:space-between;gap:8px;font:400 13px var(--body);padding:5px 0;border-bottom:1px solid #f6ecec}
+.sum div:last-child{border:0}
+.try{font:500 13px var(--body);color:var(--muted);text-align:center;margin-top:12px}
+
+/* ---------- FLOW ---------- */
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;counter-reset:f}
+.step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:8px;align-content:start;position:relative}
+.step:not(:last-child):after{content:"";position:absolute;right:-12px;top:34px;width:10px;height:10px;border-top:1.5px solid var(--gold);border-right:1.5px solid var(--gold);transform:rotate(45deg)}
+.step .k{font:500 30px/1 var(--display);color:var(--gold)}
+.step b{font:600 15.5px var(--body)}
+.step span{color:var(--muted);font-size:14px}
+.step code{font:500 12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--rose-soft);color:#7d3346;border-radius:6px;padding:2px 6px;word-break:break-all}
+.step.key{border-color:var(--rose);box-shadow:0 0 0 1px var(--rose) inset}
+.callout{margin-top:18px;background:var(--card);border-left:3px solid var(--gold);border-radius:4px 14px 14px 4px;padding:14px 18px;font-size:15px;color:var(--ink)}
+
+/* ---------- DASHBOARD ---------- */
+.browser{background:#fff;border-radius:16px;box-shadow:0 30px 60px rgba(100,50,60,.14);overflow:hidden;border:1px solid var(--line)}
+.bbar{display:flex;align-items:center;gap:7px;padding:11px 14px;background:#f4ecea}
+.bbar i{width:10px;height:10px;border-radius:50%;background:#e2b6b8}.bbar i:nth-child(2){background:#e9d39c}.bbar i:nth-child(3){background:#b9d6b3}
+.bbar span{margin-left:10px;background:#fff;border-radius:7px;padding:4px 10px;font:500 12px var(--body);color:#6a5a5d;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dash{padding:22px;background:#fdf8f6;display:grid;gap:16px}
+.dtop{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.dtop .script{font-size:40px;line-height:1}
+.pill{font:600 12px var(--body);padding:6px 11px;border-radius:999px;background:#fbe6ea;color:var(--rose)}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.tile{background:#fff;border:1px solid #f0e3e1;border-radius:13px;padding:14px;border-top:3px solid var(--c)}
+.tile .k{font:600 10.5px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tile .v{font:600 32px/1.1 var(--body);font-variant-numeric:tabular-nums;margin-top:4px}
+.tile .s{font-size:12.5px;color:var(--muted)}
+.bar{height:10px;border-radius:6px;background:#eee4e3;display:flex;overflow:hidden}
+.bar span{height:100%;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+th{font:600 10.5px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:9px 12px;border-bottom:1px solid #f0e3e1}
+td{padding:10px 12px;border-bottom:1px solid #f6eeec;font-variant-numeric:tabular-nums}
+tr:last-child td{border:0}
+.st{font:600 11.5px var(--body);padding:3px 9px;border-radius:999px;white-space:nowrap}
+.ok{background:var(--good-bg);color:var(--good)}.pend{background:var(--warn-bg);color:var(--warn)}.part{background:var(--info-bg);color:var(--info)}.dec{background:#f2eaea;color:#8a6e74}
+.dact{display:flex;flex-wrap:wrap;gap:10px}
+.dact span{font:600 13px var(--body);padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #e8dad8}
+.dact span.p{background:var(--rose);color:#fff;border-color:var(--rose)}
+
+/* ---------- EMAIL TIMELINE ---------- */
+.tl{position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:26px}
+.tl:before{content:"";position:absolute;left:8%;right:8%;top:19px;height:1.5px;background:linear-gradient(90deg,var(--gold),var(--rose))}
+.tlb{appearance:none;background:none;border:0;cursor:pointer;display:grid;justify-items:center;gap:8px;text-align:center;font:inherit;color:var(--ink);padding:0 2px;position:relative}
+.tlb .dot{width:40px;height:40px;border-radius:50%;background:var(--paper);border:1.5px solid var(--gold);display:grid;place-items:center;font:500 16px var(--display);color:var(--gold);transition:all .25s}
+.tlb b{font:600 13.5px/1.25 var(--body)}
+.tlb span{font-size:12px;color:var(--muted);line-height:1.3}
+.tlb[aria-selected="true"] .dot{background:var(--rose);border-color:var(--rose);color:#fff;transform:scale(1.12);box-shadow:0 6px 16px rgba(176,86,106,.35)}
+.mail{max-width:640px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 24px 50px rgba(100,50,60,.14);overflow:hidden;border:1px solid var(--line)}
+.mail.swap{animation:mailIn .45s ease both}
+@keyframes mailIn{from{opacity:.2;transform:translateY(10px)}to{opacity:1;transform:none}}
+.mh{padding:16px 20px;border-bottom:1px solid #f1e8e7;display:grid;gap:10px}
+.mh .subj{font:500 18px/1.3 var(--body)}
+.mfrom{display:flex;gap:10px;align-items:center;min-width:0}
+.av{width:34px;height:34px;border-radius:50%;background:var(--rose);color:#fff;display:grid;place-items:center;font:600 14px var(--body);flex:none}
+.mfrom div{min-width:0;font-size:13px;line-height:1.35}
+.mfrom b{font-weight:600}.mfrom small{color:#777;font-size:12.5px;display:block;overflow-wrap:anywhere}
+.mb{background:var(--rose-soft);padding:18px}
+.mcard{background:var(--card);border-radius:12px;border:1px solid #ecd2d4;overflow:hidden}
+.mhero{text-align:center;padding:16px 10px 12px;background:linear-gradient(180deg,#f1d3d7,#f9ecea);border-bottom:1px solid #ecd2d4}
+.mhero .script{font-size:40px;line-height:1.05;display:block;margin-top:8px}
+.mhero .d{font:400 13px var(--display);letter-spacing:.2em}
+.mbody{padding:16px 20px;font-size:14.5px;color:#4a3a3e;display:grid;gap:10px}
+.mbody .it{font:italic 400 16.5px/1.45 var(--display);color:#6e5157}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mgrid div{background:#fff;border:1px solid #f0dfdf;border-radius:10px;padding:8px 11px;font-size:13px;line-height:1.4}
+.mgrid b{display:block;font:600 10px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--rose)}
+.mrow{background:#fff;border:1px solid #f0dfdf;border-radius:10px;padding:6px 12px}
+.mrow div{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid #f6ecec;font-size:13.5px}
+.mrow div:last-child{border:0}
+.mbtns{display:flex;flex-wrap:wrap;gap:8px}
+.mbtns span{font:600 11px var(--body);letter-spacing:.15em;padding:10px 16px;border-radius:9px;background:var(--rose);color:#fff}
+.mbtns span.g{background:#fff;color:var(--rose);box-shadow:inset 0 0 0 1.5px var(--rose)}
+.mfoot{font-size:11.5px;color:#a08c90;text-align:center}
+.mnote{text-align:center;color:var(--muted);font-size:14px;margin-top:16px}
+
+/* ---------- SHEET ---------- */
+.sheet{background:#fff;border-radius:14px;border:1px solid #e4e4e4;box-shadow:0 20px 40px rgba(60,60,60,.08);overflow:hidden}
+.shh{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid #eee;flex-wrap:wrap}
+.shh .ic{width:20px;height:26px;border-radius:3px;background:#1e9e5c;flex:none}
+.shh b{font:500 15px var(--body)}
+.shh .menu{font-size:12.5px;color:#666}.shh .menu em{font-style:normal;color:var(--rose);font-weight:600}
+.grid{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
+.grid th{background:#f8f9fa;color:#5f6368;font:500 11px var(--body);text-align:center;letter-spacing:0;text-transform:none;border:1px solid #e3e3e3;padding:4px}
+.grid td{border:1px solid #e3e3e3;padding:7px 10px;white-space:nowrap}
+.grid tr.hd td{background:#fbe9ec;font-weight:600}
+.grid td.rn{background:#f8f9fa;color:#777;text-align:center;font-size:11px;width:32px}
+.grid .lnk{color:#1a5fd0;text-decoration:underline}
+.steps4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:20px;list-style:none;padding:0}
+.steps4 li{display:grid;gap:4px;padding:14px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:14.5px}
+.steps4 li b{font:500 24px/1 var(--display);color:var(--gold)}
+
+/* ---------- PHASES ---------- */
+.phases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.phase{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;display:grid;gap:12px;align-content:start}
+.phase .k{font:600 11px var(--body);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.phase ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.phase li{position:relative;padding-left:18px;font-size:14.5px}
+.phase li:before{content:"";position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:50%;background:var(--rose)}
+.phase li.new{font-weight:600}
+.phase li.new:after{content:"new";margin-left:6px;font:700 9.5px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--rose);background:var(--rose-soft);padding:2px 6px;border-radius:999px;vertical-align:2px}
+
+/* ---------- PRICE ---------- */
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px;gap:4px;margin-bottom:22px;flex-wrap:wrap}
+.seg button{appearance:none;border:0;background:transparent;border-radius:999px;padding:10px 18px;font:600 14px var(--body);color:var(--muted);cursor:pointer}
+.seg button[aria-selected="true"]{background:var(--rose);color:#fff}
+.plans{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;align-items:start}
+.plan{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;display:grid;gap:14px}
+.plan .big{font:500 clamp(40px,6vw,56px)/1 var(--display);color:var(--ink);font-variant-numeric:lining-nums}
+.plan .big small{font:500 15px var(--body);color:var(--muted)}
+.prow{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.prow:last-child{border:0}
+.prow b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.prow.total{font-weight:600}
+.save{font:600 12px var(--body);color:var(--good);background:var(--good-bg);padding:3px 9px;border-radius:999px;margin-left:6px;white-space:nowrap}
+.calc{background:#3a272c;color:#f7e9e8;border-radius:20px;padding:24px;display:grid;gap:16px}
+.calc h3{color:#fff}
+.calc label{font:600 11px var(--body);letter-spacing:.16em;text-transform:uppercase;color:#d9b9bd;display:block;margin-bottom:8px}
+.calc input[type=range]{width:100%;accent-color:#e59aa9}
+.calc select{width:100%;height:42px;border-radius:10px;border:1px solid #6b5056;background:#4a3338;color:#fff;font:500 15px var(--body);padding:0 10px}
+.calc .out{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.calc .o{background:#4a3338;border-radius:12px;padding:12px}
+.calc .o small{display:block;font-size:12px;color:#d9b9bd}
+.calc .o b{font:600 21px var(--body);font-variant-numeric:tabular-nums;color:#fff}
+.calc .o.win{box-shadow:inset 0 0 0 2px #e59aa9}
+.calc .verdict{font-size:14.5px;color:#f7e9e8;line-height:1.5}
+.calc .verdict b{color:#f5b7c2}
+.terms{margin-top:14px;font-size:14px;color:var(--muted)}
+
+/* ---------- CLOSING ---------- */
+.tline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.tline div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:4px}
+.tline b{font:600 15px var(--body)}.tline small{font:500 12px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.tline span{color:var(--muted);font-size:14px}
+.need{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
+.need ul,.need ol{margin:0;padding-left:20px;display:grid;gap:6px;font-size:15px}
+.close{text-align:center;display:grid;gap:12px;justify-items:center;padding-block:70px 90px}
+.close .script{font-size:clamp(46px,8vw,72px);line-height:1}
+
+@media (max-width:860px){
+  .demo{grid-template-columns:1fr;justify-items:center}
+  .demo-notes{order:2;width:100%}
+  .flow{grid-template-columns:1fr 1fr}
+  .step:nth-child(2):after{display:none}
+  .tiles{grid-template-columns:1fr 1fr}
+  .phases,.plans,.tline{grid-template-columns:1fr}
+  .steps4{grid-template-columns:1fr 1fr}
+}
+@media (max-width:620px){
+  section{padding-block:52px}
+  .compare,.need{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr}
+  .step:after{display:none}
+  .tl{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:18px}
+  .tl:before{display:none}
+  .mgrid{grid-template-columns:1fr}
+  .steps4{grid-template-columns:1fr}
+  .env{margin-top:110px}
+  .phone{height:640px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+
+<div class="wrap">
+
+<!-- HERO -->
+<header class="hero">
+  <div class="env" id="env" aria-hidden="true">
+    <div class="env-back"></div>
+    <div class="flap"></div>
+    <div class="letter">
+      <div class="small">A proposal for Invitationix</div>
+      <div class="script">Smart RSVP</div>
+      <div class="for">prepared for Nix</div>
+    </div>
+    <div class="env-front"></div>
+    <div class="env-bottom"></div>
+    <div class="seal">S</div>
+  </div>
+  <div class="hero-copy">
+    <span class="eyebrow">Every seat reserved with intention</span>
+    <h1>An RSVP that matches your invitation and <em>never lets a plus-one slip in</em></h1>
+    <p class="lead">Guests see only the seats the couple saved for them. Couples see a live headcount. You run every event from one Google Sheet.</p>
+    <div class="chips"><span class="chip">No plus-ones</span><span class="chip">Matches each Canva design</span><span class="chip">Automatic emails</span><span class="chip">One system for all events</span></div>
+    <nav class="toc" aria-label="Sections"><a href="#demo">Try the demo</a><a href="#emails">Emails</a><a href="#dashboard">Dashboard</a><a href="#features">Features</a><a href="#price">Price</a></nav>
+  </div>
+</header>
+
+<div class="rule">✦</div>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="head"><span class="eyebrow">Why change</span><h2>Your invitations are beautiful. The Google Form behind them isn't.</h2></div>
+  <div class="compare">
+    <div class="side old">
+      <h3>Google Form <span class="tag">today</span></h3>
+      <ul>
+        <li><i>✕</i>Anyone with the link can answer, even people who weren't invited.</li>
+        <li><i>✕</i>Guests can type in extra names.</li>
+        <li><i>✕</i>Looks plain, nothing like your invitation.</li>
+        <li><i>✕</i>Couples count replies by hand and chase late guests.</li>
+      </ul>
+    </div>
+    <div class="side new">
+      <h3>Smart RSVP <span class="tag" style="color:var(--rose)">proposed</span></h3>
+      <ul>
+        <li><i>✓</i>Only guests on the couple's list can respond.</li>
+        <li><i>✓</i>Companions are pre-listed, so plus-ones can't be added.</li>
+        <li><i>✓</i>Same colors, fonts and feel as each invitation.</li>
+        <li><i>✓</i>Live headcount and automatic reminders.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section id="demo">
+  <div class="head"><span class="eyebrow">Try it yourself</span><h2>This is what your guests will see</h2><p class="lead">It's a working demo. Type a name, switch guests on and off, then confirm. Try "Miguel Reyes" or a name that isn't invited.</p></div>
+  <div class="demo">
+    <div class="demo-notes">
+      <div class="note on" data-step="1"><div class="n">1</div><div><b>Guest finds their invitation</b><span>They type their name as written on the invitation. Small typos are fine. Names not on the list are politely turned away.</span></div></div>
+      <div class="note" data-step="2"><div class="n">2</div><div><b>Only reserved seats appear</b><span>The couple pre-lists each companion. Guests switch people on or off. There's no "add guest" button.</span></div></div>
+      <div class="note" data-step="3"><div class="n">3</div><div><b>Saved instantly</b><span>The answer goes straight to the Google Sheet, the guest gets a confirmation email, and the couple's dashboard updates.</span></div></div>
+    </div>
+    <div>
+      <div class="phone">
+        <div class="screen">
+          <div class="island"></div>
+          <div class="urlbar">🔒 rsvp.invitationix.online/lander-kathrina</div>
+
+          <div class="pane" id="p1">
+            <div class="p-small">The wedding of</div>
+            <div class="p-names">Lander</div><div class="p-amp">&amp;</div><div class="p-names">Kathrina</div>
+            <div class="p-date">MONTH 00, 2027</div>
+            <div class="p-banner">Every seat is reserved with love and intention. Kindly confirm your attendance below.</div>
+            <label class="p-label" for="gname">Guest name</label>
+            <input class="p-input" id="gname" value="Andrea Santos" autocomplete="off">
+            <div class="p-msg ok" id="gmsg" aria-live="polite">✓ Invitation found. Welcome, Andrea Santos!</div>
+            <button class="p-btn" id="go">CONTINUE</button>
+          </div>
+
+          <div class="pane" id="p2" hidden>
+            <div class="seats"><div class="p-small">Reserved in your honour</div><div class="num" id="seatn">4</div><em id="seatl">seats for the Santos family</em></div>
+            <div class="p-label">Confirm attendance</div>
+            <div id="glist"></div>
+            <div class="p-hint">STRICTLY NO PLUS-ONES · names set by the couple</div>
+            <button class="p-btn" id="confirm">CONFIRM RESPONSE</button>
+            <div class="p-deadline">RSVP DEADLINE<b>Month 00, 2027</b></div>
+          </div>
+
+          <div class="pane" id="p3" hidden><div class="spinner"></div><div class="p-hint">Sending your response…</div></div>
+
+          <div class="pane" id="p4" hidden>
+            <div class="check">✓</div>
+            <div class="p-names" style="font-size:44px">Thank you!</div>
+            <p style="font:400 15.5px/1.4 var(--display);color:#6e5157;margin-top:4px">Your response has been received.<br>We can't wait to celebrate with you.</p>
+            <div class="sum" id="sum"></div>
+            <button class="p-btn">ADD TO CALENDAR</button>
+            <button class="p-btn ghost" id="change" style="margin-top:8px">CHANGE MY ANSWER</button>
+            <div class="p-hint" id="mailto">Confirmation sent to andrea@email.com</div>
+          </div>
+        </div>
+      </div>
+      <p class="try"><button class="btn ghost" id="restart" style="padding:9px 14px;font-size:11px">Start over</button></p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT CONNECTS -->
+<section id="how">
+  <div class="head"><span class="eyebrow">How it fits your work</span><h2>Keep designing in Canva. Just change where the RSVP button goes.</h2></div>
+  <div class="flow">
+    <div class="step"><span class="k">i</span><b>Canva invitation</b><span>Your design stays the same. Its RSVP button or QR code points to the couple's Smart RSVP link.</span></div>
+    <div class="step"><span class="k">ii</span><b>RSVP page</b><span>Each couple gets a link like <code>rsvp.invitationix.online/lander-kathrina</code> styled like their invitation.</span></div>
+    <div class="step key"><span class="k">iii</span><b>One system for every event</b><span>A single Google Apps Script serves all your events. It knows which couple to show from the link.</span></div>
+    <div class="step"><span class="k">iv</span><b>Your Google Sheet</b><span>Events, guest lists and every answer, saved the moment a guest confirms.</span></div>
+  </div>
+  <p class="callout">The RSVP page matches each invitation's colors, fonts and style. It's made to feel like part of the invitation, not an exact copy of the Canva design.</p>
+</section>
+
+<!-- EMAILS -->
+<section id="emails">
+  <div class="head"><span class="eyebrow">Automatic emails</span><h2>Six emails the system sends by itself</h2><p class="lead">From your Google account, styled like the couple's invitation. Tap each moment to preview the email.</p></div>
+  <div class="tl" role="tablist" aria-label="Email timeline">
+    <button class="tlb" role="tab" aria-selected="true" data-m="0"><span class="dot">1</span><b>Confirmation</b><span>Right after RSVP</span></button>
+    <button class="tlb" role="tab" aria-selected="false" data-m="1"><span class="dot">2</span><b>Couple alert</b><span>Each new answer</span></button>
+    <button class="tlb" role="tab" aria-selected="false" data-m="2"><span class="dot">3</span><b>Please RSVP</b><span>Every 7 days</span></button>
+    <button class="tlb" role="tab" aria-selected="false" data-m="3"><span class="dot">4</span><b>Wedding reminder</b><span>30, 7 and 1 day before</span></button>
+    <button class="tlb" role="tab" aria-selected="false" data-m="4"><span class="dot">5</span><b>Announcement</b><span>When plans change</span></button>
+    <button class="tlb" role="tab" aria-selected="false" data-m="5"><span class="dot">6</span><b>Thank-you</b><span>The day after</span></button>
+  </div>
+  <div class="mail" id="mail" role="tabpanel"></div>
+  <p class="mnote">Guests need an email in the guest list, or they type it when they RSVP.</p>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard">
+  <div class="head"><span class="eyebrow">For the couple</span><h2>A live headcount they can check any time</h2><p class="lead">A private link you send to each couple. It updates every time a guest responds, and gives them the caterer and seating lists in one click.</p></div>
+  <div class="browser">
+    <div class="bbar"><i></i><i></i><i></i><span>🔒 rsvp.invitationix.online/lander-kathrina/dashboard</span></div>
+    <div class="dash">
+      <div class="dtop"><div><div class="eyebrow">RSVP dashboard</div><div class="script">Lander &amp; Kathrina</div></div><span class="pill">RSVP closes in 12 days</span></div>
+      <div class="tiles" id="tiles">
+        <div class="tile" style="--c:var(--rose)"><div class="k">Seats reserved</div><div class="v" data-to="150">150</div><div class="s">62 groups invited</div></div>
+        <div class="tile" style="--c:var(--good)"><div class="k">Confirmed</div><div class="v" data-to="104">104</div><div class="s">69% of seats</div></div>
+        <div class="tile" style="--c:#a89a9c"><div class="k">Declined</div><div class="v" data-to="11">11</div><div class="s">seats freed up</div></div>
+        <div class="tile" style="--c:#d9a400"><div class="k">No reply yet</div><div class="v" data-to="35">35</div><div class="s">14 groups pending</div></div>
+      </div>
+      <div class="bar" id="bar" aria-label="104 confirmed, 11 declined, 35 waiting"><span style="width:69%;background:var(--good)"></span><span style="width:7%;background:#cbbfc1"></span><span style="width:24%;background:#f0c94c"></span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Group</th><th>Seats</th><th>Attending</th><th>Status</th><th>Last update</th></tr></thead>
+        <tbody>
+        <tr><td>Santos family</td><td>4</td><td>3</td><td><span class="st part">Partly attending</span></td><td>Today, 3:12 PM</td></tr>
+        <tr><td>Reyes, Miguel &amp; Joy</td><td>2</td><td>2</td><td><span class="st ok">Confirmed</span></td><td>Today, 11:40 AM</td></tr>
+        <tr><td>Dela Cruz family</td><td>5</td><td>—</td><td><span class="st pend">No reply · reminded 2×</span></td><td>—</td></tr>
+        <tr><td>Garcia, Liza</td><td>1</td><td>0</td><td><span class="st dec">Declined</span></td><td>Yesterday</td></tr>
+        </tbody></table></div>
+      <div class="dact"><span class="p">Send reminder to 14 pending groups</span><span>Download caterer headcount</span><span>Export seating list</span><span>Send announcement</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SHEET -->
+<section id="manage">
+  <div class="head"><span class="eyebrow">For you</span><h2>Every event lives in one Google Sheet</h2><p class="lead">You add the event and the guest list. The system creates the RSVP link. No coding.</p></div>
+  <div class="sheet">
+    <div class="shh"><span class="ic"></span><b>Invitationix · Smart RSVP</b><span class="menu">File · Edit · View · Extensions · <em>RSVP Tools ▾</em></span></div>
+    <div class="tbl"><table class="grid">
+      <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+      <tr class="hd"><td class="rn">1</td><td>Event code</td><td>Couple / celebrant</td><td>Event date</td><td>Design</td><td>Status</td><td>RSVP link (automatic)</td></tr>
+      <tr><td class="rn">2</td><td>lander-kathrina</td><td>Lander &amp; Kathrina</td><td>Month 00, 2027</td><td>Luxe Blush</td><td><span class="st ok">Open</span></td><td class="lnk">rsvp.invitationix.online/lander-kathrina</td></tr>
+      <tr><td class="rn">3</td><td>miguel-joy</td><td>Miguel &amp; Joy</td><td>Feb 14, 2027</td><td>Midnight Gold</td><td><span class="st ok">Open</span></td><td class="lnk">rsvp.invitationix.online/miguel-joy</td></tr>
+      <tr><td class="rn">4</td><td>bianca-18th</td><td>Bianca's 18th Birthday</td><td>Dec 12, 2026</td><td>Garden Sage</td><td><span class="st pend">Draft</span></td><td class="lnk">rsvp.invitationix.online/bianca-18th</td></tr>
+    </table></div>
+  </div>
+  <ol class="steps4">
+    <li><b>1</b>Add the event: names, date, deadline, design.</li>
+    <li><b>2</b>Paste the couple's guest list.</li>
+    <li><b>3</b>Copy the RSVP link into the Canva RSVP button.</li>
+    <li><b>4</b>Send the couple their dashboard link.</li>
+  </ol>
+  <p class="terms" style="text-align:center">About 10 minutes per new event.</p>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="head"><span class="eyebrow">What's included</span><h2>Built in three phases</h2><p class="lead">You can start selling after Phase 1 and add the rest when you're ready.</p></div>
+  <div class="phases">
+    <div class="phase"><span class="k">Phase 1</span><h3>Basic RSVP</h3><ul>
+      <li>Guest name search (typos OK)</li><li>Seats reserved per group</li><li>Accept or decline per person</li><li>Thank-you screen</li><li>All answers saved in Google Sheets</li><li>1 design (Luxe)</li></ul></div>
+    <div class="phase"><span class="k">Phase 2</span><h3>Automation</h3><ul>
+      <li>RSVP closes on the deadline</li><li>Guests can change their answer</li><li>Couple dashboard and caterer list</li><li>Confirmation and "please RSVP" emails</li>
+      <li class="new">Wedding reminders 30, 7 and 1 day before</li><li class="new">Announcement to all confirmed guests</li><li class="new">Post-wedding thank-you</li></ul></div>
+    <div class="phase"><span class="k">Phase 3</span><h3>Extras</h3><ul>
+      <li>3 more designs</li><li>Uses your Canva header image</li><li>Extra privacy check</li><li>QR check-in at the venue</li>
+      <li class="new">VIP alert on check-in</li><li class="new">"Find my table" seat lookup</li></ul></div>
+  </div>
+</section>
+
+<!-- PRICE -->
+<section id="price">
+  <div class="head"><span class="eyebrow">Investment</span><h2>Choose how you'd like to pay</h2><p class="lead">Both options include the same system. Neither has monthly fees.</p></div>
+  <div class="seg" role="tablist" aria-label="Payment option">
+    <button role="tab" aria-selected="true" data-p="a" id="tab-a">Option A · One-time</button>
+    <button role="tab" aria-selected="false" data-p="b" id="tab-b">Option B · Setup + per event</button>
+  </div>
+  <div class="plans">
+    <div class="plan" id="plan-a">
+      <div class="big">₱25,000 <small>all 3 phases, one-time</small></div>
+      <div>
+        <div class="prow"><span>Phase 1 · Basic RSVP</span><b>₱12,000</b></div>
+        <div class="prow"><span>Phase 2 · Automation</span><b>₱8,000</b></div>
+        <div class="prow"><span>Phase 3 · Extras</span><b>₱8,000</b></div>
+        <div class="prow total"><span>All 3 phases <span class="save">save ₱3,000</span></span><b>₱25,000</b></div>
+      </div>
+      <p class="terms">50% to start, 50% after you test and approve it. You can also start with Phase 1 only.</p>
+    </div>
+    <div class="plan" id="plan-b" hidden>
+      <div class="big">₱12,000 <small>setup, then ₱300 per event</small></div>
+      <div>
+        <div class="prow"><span>Setup fee (all 3 phases)</span><b>₱12,000</b></div>
+        <div class="prow"><span>Each event that uses the Smart RSVP</span><b>₱300</b></div>
+      </div>
+      <p class="terms">Setup: 50% to start, 50% after you test and approve it. Event fees are totaled and paid at the end of each month, only for months with events.</p>
+    </div>
+    <div class="calc">
+      <h3>What it means for you</h3>
+      <div><label for="ev">Events using Smart RSVP: <span id="evn">20</span></label><input type="range" id="ev" min="1" max="80" value="20"></div>
+      <div><label for="addon">You charge couples per event</label>
+        <select id="addon"><option value="1500">₱1,500 · Smart RSVP</option><option value="2500" selected>₱2,500 · Smart RSVP Plus</option><option value="4000">₱4,000 · Smart RSVP Luxe</option></select></div>
+      <div class="out">
+        <div class="o" id="oa"><small>Your cost · Option A</small><b id="ca">₱25,000</b></div>
+        <div class="o" id="ob"><small>Your cost · Option B</small><b id="cb">₱18,000</b></div>
+      </div>
+      <p class="verdict" id="verdict"></p>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE / NEXT -->
+<section id="next">
+  <div class="head"><span class="eyebrow">Timeline</span><h2>About three weeks from yes to launch</h2></div>
+  <div class="tline">
+    <div><small>Week 1</small><b>Phase 1 · Basic RSVP</b><span>Live demo link on your domain with a test event.</span></div>
+    <div><small>Week 2</small><b>Phase 2 · Automation</b><span>Dashboard and automatic emails working on the test event.</span></div>
+    <div><small>Week 3</small><b>Phase 3 · Extras</b><span>More designs, QR check-in, seat lookup and a setup guide.</span></div>
+  </div>
+  <div class="need">
+    <div class="plan"><h3>What I need from you</h3><ul>
+      <li>A Google Workspace account for your business (it can send many more emails per day than free Gmail)</li>
+      <li>Access to your domain settings for the RSVP link</li>
+      <li>One sample guest list (fake names are fine)</li>
+      <li>Your feedback after each phase</li></ul></div>
+    <div class="plan"><h3>Next steps</h3><ol>
+      <li>Choose Option A or Option B.</li><li>Send the 50% down payment.</li><li>Share your Google account and domain access.</li><li>Try the Phase 1 demo.</li></ol></div>
+  </div>
+</section>
+
+<footer class="close">
+  <div class="rule">✦</div>
+  <div class="script">Thank you, Nix</div>
+  <p class="lead" style="text-align:center">Excited to help your invitations do even more for your couples.</p>
+</footer>
+</div>
+
+<script>
+(function(){
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* envelope */
+const env=document.getElementById('env');
+if(!reduce){env.classList.add('closed');requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(()=>env.classList.remove('closed'),450)));}
+
+/* ---------- demo ---------- */
+const guests={
+ 'andrea santos':{group:'Santos family',email:'andrea@email.com',people:['Andrea Santos','Paolo Santos','Carmen Santos','Bea Santos']},
+ 'miguel reyes':{group:'Reyes',email:'miguel@email.com',people:['Miguel Reyes','Joy Reyes']},
+ 'ana lim':{group:'Office friends',email:'ana@email.com',people:['Ana Lim','Mark Tan','Jen Uy']}
+};
+const norm=s=>s.toLowerCase().replace(/\s+/g,' ').trim();
+function lev(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i]);for(let j=1;j<=n;j++)d[0][j]=j;
+ for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n];}
+function find(q){q=norm(q);if(q.length<3)return null;let best=null,bd=99;
+ for(const k in guests){const d=lev(q,k);if(d<bd){bd=d;best=k}
+   for(const p of guests[k].people){const dd=lev(q,norm(p));if(dd<bd){bd=dd;best=k}}}
+ return bd<=2?best:null;}
+const $=id=>document.getElementById(id);
+let cur='andrea santos',state=[];
+const panes=['p1','p2','p3','p4'];
+function show(id,step){panes.forEach(p=>{const el=$(p);el.hidden=p!==id;if(p===id){el.classList.remove('enter');void el.offsetWidth;el.classList.add('enter')}});
+ document.querySelectorAll('.note').forEach(n=>n.classList.toggle('on',+n.dataset.step===step));}
+function check(){const k=find($('gname').value);const m=$('gmsg');cur=k;
+ if(k){m.className='p-msg ok';m.textContent='✓ Invitation found. Welcome, '+guests[k].people[0]+'!';$('go').disabled=false}
+ else{m.className='p-msg no';m.textContent=$('gname').value.trim().length<3?'Type your name as written on the invitation.':'Sorry, we can’t find that name on the guest list. Please check the spelling on your invitation.';$('go').disabled=true}}
+$('gname').addEventListener('input',check);
+$('go').addEventListener('click',()=>{if(!cur)return;const g=guests[cur];state=g.people.map(()=>true);render();show('p2',2)});
+function render(){const g=guests[cur];$('seatn').textContent=g.people.length;$('seatl').textContent=(g.people.length===1?'seat':'seats')+' for '+(g.group.endsWith('family')?'the ':'')+g.group;
+ const l=$('glist');l.innerHTML='';g.people.forEach((p,i)=>{const b=document.createElement('button');b.className='guest';b.type='button';b.setAttribute('aria-pressed',state[i]);
+  b.innerHTML='<span class="gn"></span><span class="gs"><span class="lbl"></span><span class="sw"></span></span>';b.querySelector('.gn').textContent=p;
+  b.querySelector('.lbl').textContent=state[i]?'JOYFULLY ACCEPTS':'REGRETFULLY DECLINES';
+  b.addEventListener('click',()=>{state[i]=!state[i];render()});l.appendChild(b)});}
+$('confirm').addEventListener('click',()=>{show('p3',3);setTimeout(()=>{const g=guests[cur];const yes=g.people.filter((_,i)=>state[i]);
+ const s=$('sum');s.innerHTML='';const top=document.createElement('div');top.innerHTML='<span>Attending</span><b></b>';top.querySelector('b').textContent=yes.length+' of '+g.people.length+' seats';s.appendChild(top);
+ g.people.forEach((p,i)=>{const r=document.createElement('div');r.innerHTML='<span></span><span></span>';r.children[0].textContent=p;r.children[1].textContent=state[i]?'✓ Accepts':'Declines';r.children[1].style.color=state[i]?'var(--good)':'#a89a9c';s.appendChild(r)});
+ $('mailto').textContent='Confirmation sent to '+g.email;show('p4',3)},reduce?50:1100)});
+$('change').addEventListener('click',()=>{render();show('p2',2)});
+$('restart').addEventListener('click',()=>{$('gname').value='Andrea Santos';check();show('p1',1)});
+
+/* ---------- emails ---------- */
+const H=(top)=>'<div class="mhero"><div class="eyebrow" style="font-size:10px">'+top+'</div><span class="script">Lander &amp; Kathrina</span><div class="d">MONTH 00, 2027</div></div>';
+const mails=[
+ {s:"You're confirmed for Lander & Kathrina's wedding",to:'andrea@email.com',b:H('The wedding of')+'<div class="mbody"><p>Hi Andrea, thank you for your response! Here’s a copy of your RSVP:</p><div class="mrow"><div><span>Andrea Santos</span><b style="color:var(--good)">Attending</b></div><div><span>Paolo Santos</span><b style="color:var(--good)">Attending</b></div><div><span>Carmen Santos</span><span style="color:#a89a9c">Not attending</span></div><div><span>Bea Santos</span><b style="color:var(--good)">Attending</b></div></div><p>Ceremony: San Antonio de Padua Parish, Silang, Cavite<br>Reception: Grandeur Palace</p><div class="mbtns"><span>ADD TO CALENDAR</span><span class="g">CHANGE MY ANSWER</span></div><p class="mfoot">You can change your answer until Month 00, 2027.</p></div>'},
+ {s:'New RSVP: Santos family (3 of 4 attending)',to:'lander.kathrina@email.com',from:'Smart RSVP',b:'<div class="mbody"><div class="mrow"><div><span>Confirmed so far</span><b>104 of 150 seats</b></div><div><span>Still waiting</span><b>14 groups</b></div><div><span>Latest</span><b>Santos family · 3 attending</b></div></div><div class="mbtns"><span>OPEN DASHBOARD</span></div></div>'},
+ {s:'A gentle reminder: please RSVP by Month 00, 2027',to:'delacruz.family@email.com',b:H('Kindly RSVP')+'<div class="mbody"><p>Hi Dela Cruz family,</p><p class="it">Every seat is reserved with love and intention. We’ve saved 5 seats for you and would love to know if you can make it.</p><div class="mbtns"><span>RSVP NOW</span></div><p class="mfoot">RSVP closes in 12 days. Strictly no plus-ones.</p></div>'},
+ {s:"One week to go! Your guide for Lander & Kathrina's wedding",to:'andrea@email.com',b:H('See you in 7 days')+'<div class="mbody"><p>Hi Andrea, we can’t wait to celebrate with you! Here’s everything you need:</p><div class="mgrid"><div><b>Ceremony</b>San Antonio de Padua Parish, Silang · 0:00 PM</div><div><b>Reception</b>Grandeur Palace, Santa Rosa–Tagaytay Rd</div><div><b>Dress code</b>Formal. Ladies in soft pink, gentlemen in modern barong</div><div><b>Your table</b>Table 7 · 3 seats for the Santos family</div></div><p>Please arrive 30 minutes early. Parking is available at the venue.</p><div class="mbtns"><span>VIEW MAP</span><span class="g">MY QR FOR CHECK-IN</span></div></div>'},
+ {s:'Important update: reception time has changed',to:'all confirmed guests',b:'<div class="mbody"><p style="font:600 16px var(--body);color:var(--rose)">Reception now starts at 0:00 PM</p><p>Hi Andrea, a quick update: due to a change in the venue’s schedule, the reception will begin 30 minutes later than planned. The ceremony time stays the same.</p></div>'},
+ {s:'Thank you for celebrating with us',to:'andrea@email.com',b:'<div class="mhero"><span class="script" style="margin-top:0">Thank you!</span></div><div class="mbody"><p class="it">Your love, prayers and presence made our day complete. We are so grateful you were there.</p><p>With love, Lander &amp; Kathrina</p><div class="mbtns"><span>VIEW &amp; SHARE PHOTOS</span></div></div>'}
+];
+function showMail(i,anim){const m=mails[i],from=m.from||'Lander &amp; Kathrina';
+ $('mail').innerHTML='<div class="mh"><div class="subj"></div><div class="mfrom"><span class="av">'+from[0]+'</span><div><b>'+from+'</b> <span style="color:#777">&lt;rsvp@invitationix.online&gt;</span><small>to '+m.to+'</small></div></div></div><div class="mb"><div class="mcard">'+m.b+'</div></div>';
+ $('mail').querySelector('.subj').textContent=m.s;
+ if(anim){$('mail').classList.remove('swap');void $('mail').offsetWidth;$('mail').classList.add('swap')}
+ document.querySelectorAll('.tlb').forEach(b=>b.setAttribute('aria-selected',+b.dataset.m===i))}
+document.querySelectorAll('.tlb').forEach(b=>b.addEventListener('click',()=>showMail(+b.dataset.m,true)));
+showMail(0,false);
+
+/* ---------- dashboard count-up when seen ---------- */
+const tiles=document.getElementById('tiles');let counted=false;
+if('IntersectionObserver' in window && !reduce){new IntersectionObserver((es,o)=>{es.forEach(e=>{if(e.isIntersecting&&!counted){counted=true;o.disconnect();
+  tiles.querySelectorAll('.v').forEach(v=>{const to=+v.dataset.to,t0=performance.now();const step=t=>{const p=Math.min(1,(t-t0)/1200);v.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step)};requestAnimationFrame(step)});
+  const spans=document.querySelectorAll('#bar span'),w=[...spans].map(s=>s.style.width);spans.forEach(s=>s.style.width='0');requestAnimationFrame(()=>requestAnimationFrame(()=>spans.forEach((s,i)=>s.style.width=w[i])));
+ }})},{threshold:.4}).observe(tiles);}
+
+/* ---------- pricing ---------- */
+const peso=n=>'₱'+Math.round(n).toLocaleString('en-US');
+document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{
+ document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-selected',x===b));
+ $('plan-a').hidden=b.dataset.p!=='a';$('plan-b').hidden=b.dataset.p!=='b';}));
+function calc(){const n=+$('ev').value,price=+$('addon').value;$('evn').textContent=n;
+ const a=25000,bb=12000+300*n,rev=n*price;$('ca').textContent=peso(a);$('cb').textContent=peso(bb);
+ $('oa').classList.toggle('win',a<bb);$('ob').classList.toggle('win',bb<=a);
+ const pa=Math.ceil(25000/price),pb=Math.ceil(12000/(price-300));
+ $('verdict').innerHTML='With '+n+' events at '+peso(price)+', couples pay you <b>'+peso(rev)+'</b>. '+(bb<=a?'Option B costs less at this volume':'Option A costs less at this volume')+'. Option A pays for itself after <b>'+pa+' events</b>; Option B’s setup after <b>'+pb+' events</b>.';}
+$('ev').addEventListener('input',calc);$('addon').addEventListener('change',calc);calc();
+})();
+</script>
+
+</body></html>
