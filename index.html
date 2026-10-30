@@ -3,7 +3,7 @@
 <title>Smart RSVP for Invitationix</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Figtree:wght@400;500;600;700&family=Pinyon+Script&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Figtree:wght@400;500;600;700&family=Pinyon+Script&family=Great+Vibes&family=Playfair+Display:ital,wght@1,500&display=swap">
 <style>
 /* Layout: an invitation that opens into a single centred column of "cards" on blush paper; one live phone demo is the centrepiece.
    Deliberately single-theme (stationery look), colors set explicitly. */
@@ -238,6 +238,36 @@ tr:last-child td{border:0}
 .steps4 li{display:grid;gap:4px;padding:14px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:14.5px}
 .steps4 li b{font:500 24px/1 var(--display);color:var(--gold)}
 
+/* ---------- DESIGN SETTINGS ---------- */
+.dz{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:36px;align-items:start}
+.dz-left{display:grid;gap:22px;min-width:0}
+.dgrid{min-width:780px}
+.drow{cursor:pointer;transition:background .2s}
+.drow:hover td{background:#fdf6f6}
+.drow.on td{background:#fff3c4}
+.drow.on td.rn{background:#f3d77a}
+.sw2{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;border:1px solid rgba(0,0,0,.15)}
+.dsteps{display:grid;gap:12px}
+.dsteps ol{margin:0;padding-left:20px;display:grid;gap:8px;font-size:15px}
+.dsteps ol b{font-weight:600}
+.mini{--m:#b0566a;--a:#c2a06a;--bg:#f6e4e4;--txt:#3a272c;--nf:"Pinyon Script";
+  border-radius:30px;border:9px solid #231a1d;background:var(--bg);color:var(--txt);padding:14px 18px 20px;text-align:center;display:grid;gap:8px;
+  box-shadow:0 30px 60px rgba(90,40,50,.25);transition:background .6s,color .6s}
+.mini-url{font:500 10px var(--body);background:rgba(255,255,255,.75);color:#5a4a4d;border-radius:8px;padding:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini-head{height:64px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,color-mix(in srgb,var(--m) 28%,var(--bg)),color-mix(in srgb,var(--a) 30%,var(--bg)));transition:background .6s}
+.mini-art{font-size:24px;letter-spacing:.4em;color:var(--a);transition:color .6s}
+.mini-small{font:600 9.5px var(--body);letter-spacing:.28em;text-transform:uppercase;color:var(--m);transition:color .6s}
+.mini-names{font-family:var(--nf),cursive;font-size:38px;line-height:1.05;color:var(--m);transition:color .6s}
+.mini-names.serif{font-size:28px;font-style:italic}
+.mini-date{font:400 13px var(--display);letter-spacing:.2em}
+.mini-banner{border:1px solid color-mix(in srgb,var(--a) 50%,transparent);border-radius:10px;padding:8px;font:italic 400 13.5px/1.4 var(--display);background:color-mix(in srgb,var(--a) 14%,transparent)}
+.mini-field{text-align:left;height:38px;border-radius:9px;background:#fff;color:#9a8c8f;border:1.5px solid var(--a);display:flex;align-items:center;padding:0 10px;font:500 13px var(--body)}
+.mini-btn{height:40px;border-radius:10px;background:var(--m);color:#fff;display:grid;place-items:center;font:600 10.5px var(--body);letter-spacing:.2em;transition:background .6s}
+.mini-tabs{display:grid;gap:6px;margin-top:16px}
+.mini-tabs button{appearance:none;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 12px;font:500 14px var(--body);color:var(--ink);cursor:pointer;text-align:left}
+.mini-tabs button[aria-selected="true"]{border-color:var(--rose);box-shadow:inset 0 0 0 1px var(--rose);color:var(--rose);font-weight:600}
+@media (max-width:860px){.dz{grid-template-columns:1fr}.dz-right{max-width:320px;width:100%;justify-self:center}}
+
 /* ---------- PHASES ---------- */
 .phases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .phase{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;display:grid;gap:12px;align-content:start}
@@ -335,7 +365,7 @@ tr:last-child td{border:0}
     <h1>An RSVP that matches your invitation and <em>never lets a plus-one slip in</em></h1>
     <p class="lead">Guests see only the seats the couple saved for them. Couples see a live headcount. You run every event from one Google Sheet.</p>
     <div class="chips"><span class="chip">No plus-ones</span><span class="chip">Matches each Canva design</span><span class="chip">Automatic emails</span><span class="chip">One system for all events</span></div>
-    <nav class="toc" aria-label="Sections"><a href="#demo">Try the demo</a><a href="#emails">Emails</a><a href="#dashboard">Dashboard</a><a href="#features">Features</a><a href="#price">Price</a></nav>
+    <nav class="toc" aria-label="Sections"><a href="#demo">Try the demo</a><a href="#design">Matching designs</a><a href="#emails">Emails</a><a href="#dashboard">Dashboard</a><a href="#features">Features</a><a href="#price">Price</a></nav>
   </div>
 </header>
 
@@ -495,6 +525,52 @@ tr:last-child td{border:0}
   <p class="terms" style="text-align:center">About 10 minutes per new event.</p>
 </section>
 
+<!-- DESIGN SETTINGS -->
+<section id="design">
+  <div class="head"><span class="eyebrow">Matching each invitation</span><h2>One RSVP page, restyled for every couple</h2><p class="lead">You don't build a new page per invitation. Each event has a row of design settings in the Sheet, and the RSVP page dresses itself in those colors, fonts and images. Tap an event to see it change.</p></div>
+  <div class="dz">
+    <div class="dz-left">
+      <div class="sheet">
+        <div class="shh"><span class="ic"></span><b>Design settings</b><span class="menu">tab in your Smart RSVP Sheet</span></div>
+        <div class="tbl"><table class="grid dgrid">
+          <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th></tr>
+          <tr class="hd"><td class="rn">1</td><td>Event code</td><td>Layout</td><td>Main color</td><td>Accent</td><td>Background</td><td>Names font</td><td>Header image</td></tr>
+          <tr class="drow on" data-t="0" tabindex="0"><td class="rn">2</td><td>lander-kathrina</td><td>Luxe</td><td><i class="sw2" style="background:#b0566a"></i>#B0566A</td><td><i class="sw2" style="background:#c2a06a"></i>#C2A06A</td><td><i class="sw2" style="background:#f6e4e4"></i>#F6E4E4</td><td>Pinyon Script</td><td class="lnk">florals-header.png</td></tr>
+          <tr class="drow" data-t="1" tabindex="0"><td class="rn">3</td><td>miguel-joy</td><td>Luxe</td><td><i class="sw2" style="background:#d4af6a"></i>#D4AF6A</td><td><i class="sw2" style="background:#f3e3bf"></i>#F3E3BF</td><td><i class="sw2" style="background:#14233b"></i>#14233B</td><td>Great Vibes</td><td class="lnk">stars-header.png</td></tr>
+          <tr class="drow" data-t="2" tabindex="0"><td class="rn">4</td><td>bianca-18th</td><td>Modern</td><td><i class="sw2" style="background:#5f7a5c"></i>#5F7A5C</td><td><i class="sw2" style="background:#c9a96e"></i>#C9A96E</td><td><i class="sw2" style="background:#eef2ea"></i>#EEF2EA</td><td>Playfair Display</td><td class="lnk">garden-header.png</td></tr>
+        </table></div>
+      </div>
+      <div class="dsteps">
+        <h3>Matching a new invitation takes 4 steps</h3>
+        <ol>
+          <li><b>Copy the colors from Canva.</b> Click a color in the Canva design to see its code (e.g. #B0566A) and paste it in the Sheet.</li>
+          <li><b>Pick the font.</b> Most Canva wedding fonts are free Google Fonts. Type the same name, or the closest match.</li>
+          <li><b>Export the header from Canva.</b> Download the florals, monogram or the couple's names as a PNG and add it to the row.</li>
+          <li><b>Choose a layout.</b> Luxe, Classic, Modern or Floral. Each one restyles to the colors above.</li>
+        </ol>
+        <p class="terms">If an invitation uses a Canva-only font, the header image carries the exact lettering, so the couple's names still look identical.</p>
+      </div>
+    </div>
+    <div class="dz-right">
+      <div class="mini" id="mini">
+        <div class="mini-url" id="miniurl">rsvp.invitationix.online/lander-kathrina</div>
+        <div class="mini-head" id="minihead"><div class="mini-art" id="miniart">✿ ❀ ✿</div></div>
+        <div class="mini-small" id="minismall">The wedding of</div>
+        <div class="mini-names" id="mininames">Lander &amp; Kathrina</div>
+        <div class="mini-date" id="minidate">MONTH 00, 2027</div>
+        <div class="mini-banner" id="minibanner">Every seat is reserved with love and intention.</div>
+        <div class="mini-field">Guest name</div>
+        <div class="mini-btn">CONTINUE</div>
+      </div>
+      <div class="mini-tabs" role="tablist" aria-label="Example events">
+        <button role="tab" aria-selected="true" data-t="0">Lander &amp; Kathrina</button>
+        <button role="tab" aria-selected="false" data-t="1">Miguel &amp; Joy</button>
+        <button role="tab" aria-selected="false" data-t="2">Bianca's 18th</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FEATURES -->
 <section id="features">
   <div class="head"><span class="eyebrow">What's included</span><h2>Built in three phases</h2><p class="lead">You can start selling after Phase 1 and add the rest when you're ready.</p></div>
@@ -642,6 +718,20 @@ if('IntersectionObserver' in window && !reduce){new IntersectionObserver((es,o)=
   tiles.querySelectorAll('.v').forEach(v=>{const to=+v.dataset.to,t0=performance.now();const step=t=>{const p=Math.min(1,(t-t0)/1200);v.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step)};requestAnimationFrame(step)});
   const spans=document.querySelectorAll('#bar span'),w=[...spans].map(s=>s.style.width);spans.forEach(s=>s.style.width='0');requestAnimationFrame(()=>requestAnimationFrame(()=>spans.forEach((s,i)=>s.style.width=w[i])));
  }})},{threshold:.4}).observe(tiles);}
+
+/* ---------- design settings preview ---------- */
+const themes=[
+ {url:'lander-kathrina',m:'#b0566a',a:'#c2a06a',bg:'#f6e4e4',txt:'#3a272c',nf:'"Pinyon Script"',serif:false,small:'The wedding of',names:'Lander & Kathrina',date:'MONTH 00, 2027',banner:'Every seat is reserved with love and intention.',art:'✿ ❀ ✿'},
+ {url:'miguel-joy',m:'#d4af6a',a:'#f3e3bf',bg:'#14233b',txt:'#f4ead6',nf:'"Great Vibes"',serif:false,small:'Together with their families',names:'Miguel & Joy',date:'FEBRUARY 14, 2027',banner:'We can’t wait to celebrate under the stars with you.',art:'✦ ✧ ✦'},
+ {url:'bianca-18th',m:'#5f7a5c',a:'#c9a96e',bg:'#eef2ea',txt:'#2f3a2e',nf:'"Playfair Display"',serif:true,small:'You are invited to',names:'Bianca’s 18th',date:'DECEMBER 12, 2026',banner:'Eighteen roses, eighteen candles, one garden party.',art:'❦ ❧ ❦'}
+];
+function setTheme(i){const t=themes[i],mi=$('mini');
+ mi.style.setProperty('--m',t.m);mi.style.setProperty('--a',t.a);mi.style.setProperty('--bg',t.bg);mi.style.setProperty('--txt',t.txt);mi.style.setProperty('--nf',t.nf);
+ $('miniurl').textContent='rsvp.invitationix.online/'+t.url;$('minismall').textContent=t.small;$('mininames').textContent=t.names;$('mininames').classList.toggle('serif',t.serif);
+ $('minidate').textContent=t.date;$('minibanner').textContent=t.banner;$('miniart').textContent=t.art;
+ document.querySelectorAll('.mini-tabs button').forEach(b=>b.setAttribute('aria-selected',+b.dataset.t===i));
+ document.querySelectorAll('.drow').forEach(r=>r.classList.toggle('on',+r.dataset.t===i));}
+document.querySelectorAll('.mini-tabs button,.drow').forEach(el=>{el.addEventListener('click',()=>setTheme(+el.dataset.t));el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setTheme(+el.dataset.t)}})});
 
 /* ---------- pricing ---------- */
 const peso=n=>'₱'+Math.round(n).toLocaleString('en-US');
