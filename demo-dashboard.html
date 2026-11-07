@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_blank">
+<meta charset="utf-8">
+<link id="fontlink" rel="stylesheet" href="">
+<style>
+:root{--main:#B0566A;--accent:#C2A06A;--bg:#F6E4E4;--text:#3A272C;--names:"Pinyon Script",cursive;--ui:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --card:#fff;--field:#fff;--muted:color-mix(in srgb,var(--text) 60%,transparent);--line:color-mix(in srgb,var(--accent) 30%,#eee);
+  --good:#2f7d50;--good-bg:#e6f3ea;--warn:#946300;--warn-bg:#fcf1d8;--info:#2d5bd0;--info-bg:#e8eefc;--grey:#8a7d80;--grey-bg:#f1ecec}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:400 14px/1.5 var(--ui);padding:24px max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left))}
+.wrap{max-width:1000px;margin:0 auto;display:grid;gap:18px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.eyebrow{font:600 11px var(--ui);letter-spacing:.22em;text-transform:uppercase;color:var(--main)}
+.names{font:400 clamp(38px,7vw,54px)/1.05 var(--names);color:var(--main)}
+.sub{color:var(--muted)}
+.pill{font:600 12px var(--ui);padding:7px 12px;border-radius:999px;background:color-mix(in srgb,var(--main) 14%,var(--card));color:var(--main)}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;border-top:3px solid var(--c)}
+.tile .k{font:600 10.5px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.tile .v{font:700 32px/1.1 var(--ui);font-variant-numeric:tabular-nums;margin-top:4px}
+.tile .s{font-size:12.5px;color:var(--muted)}
+.bar{height:12px;border-radius:7px;background:color-mix(in srgb,var(--text) 10%,transparent);display:flex;overflow:hidden}
+.bar span{height:100%;transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--line)}
+.ph h2{margin:0;font:600 15px var(--ui)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.chip{appearance:none;border:1px solid var(--line);background:var(--field);color:var(--text);border-radius:999px;padding:7px 12px;font:600 12.5px var(--ui);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--main);border-color:var(--main);color:#fff}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.search{flex:1;min-width:160px;height:36px;border-radius:10px;border:1px solid var(--line);padding:0 12px;font:500 14px var(--ui);background:var(--field);color:var(--text)}
+.btn{appearance:none;border:0;border-radius:10px;padding:9px 14px;background:var(--main);color:#fff;font:600 12.5px var(--ui);cursor:pointer}
+.btn.alt{background:var(--field);color:var(--text);border:1px solid var(--line)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:680px}
+th{font:600 10.5px var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--accent) 6%,var(--card))}
+td{padding:11px 14px;border-bottom:1px solid color-mix(in srgb,var(--text) 8%,transparent);vertical-align:top;font-variant-numeric:tabular-nums}
+tr:last-child td{border:0}
+td small{display:block;color:var(--muted);font-size:12px}
+.st{font:600 11.5px var(--ui);padding:3px 9px;border-radius:999px;white-space:nowrap}
+.st.a{background:var(--good-bg);color:var(--good)}.st.p{background:var(--info-bg);color:var(--info)}.st.d{background:var(--grey-bg);color:var(--grey)}.st.w{background:var(--warn-bg);color:var(--warn)}
+.rolechip{font:700 9.5px var(--ui);letter-spacing:.08em;text-transform:uppercase;color:var(--main);background:color-mix(in srgb,var(--main) 12%,var(--card));border-radius:999px;padding:2px 7px;margin-left:6px}
+.vip{font:700 9.5px var(--ui);letter-spacing:.1em;color:#9a7a3a;background:#f7eedb;border-radius:999px;padding:2px 6px;margin-left:6px}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.msgs{display:grid;grid-template-columns:1fr 1.4fr;gap:0}
+.msgs > div{padding:16px;display:grid;gap:10px;align-content:start}
+.msgs > div + div{border-left:1px solid var(--line)}
+.msgs h3{margin:0;font:600 14px var(--ui)}
+.msgs p{margin:0;color:var(--muted);font-size:13px}
+.msgs label{font:600 11px var(--ui);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.msgs input,.msgs select,.msgs textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font:500 14px var(--ui);background:var(--field);color:var(--text)}
+.msgs textarea{min-height:96px;resize:vertical}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 12px;font:600 13px var(--ui)}
+.note{border-radius:10px;padding:10px 12px;font:500 13px var(--ui)}
+.note.ok{background:var(--good-bg);color:var(--good)}.note.err{background:#f7e4e4;color:#9a4a55}
+.seat{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;padding:16px}
+.tcard{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--field);display:grid;gap:10px}
+.rt{position:relative;width:160px;height:160px;margin:2px auto 0}
+.rt .rtop{position:absolute;inset:30px;border-radius:50%;background:color-mix(in srgb,var(--main) 12%,var(--card));border:2px solid color-mix(in srgb,var(--main) 45%,transparent);display:grid;place-items:center;text-align:center}
+.rt .rtop b{display:block;font:700 26px/1 var(--ui);color:var(--main);margin-bottom:3px}
+.rt .rtop small{font:600 9.5px var(--ui);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rt .st8{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--main)}
+.rt .st8.vipd{background:#c9a14a}
+.tcard .who{font-size:13px;padding:5px 0;border-top:1px dashed color-mix(in srgb,var(--text) 12%,transparent)}
+.tcard .who small{color:var(--muted)}
+.tcard.none .rtop{background:var(--grey-bg);border-color:#d6cbcd}.tcard.none .rtop b{font-size:13px;color:var(--grey)}
+.chart{padding:14px 16px 10px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart .cap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.edit{appearance:none;border:1px solid var(--line);background:var(--field);color:var(--main);border-radius:8px;padding:4px 9px;font:600 12px var(--ui);cursor:pointer;margin-top:6px}
+.btn.danger{background:#fff;color:#a23b4c;border:1px solid #e6c2c8}
+.caterer{display:flex;gap:18px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--line);font-size:13.5px}
+.caterer b{font-size:18px}
+.errpage{max-width:520px;margin:60px auto;background:#fff;border-radius:16px;padding:28px;text-align:center}
+.foot{text-align:center;color:var(--muted);font-size:12px}
+[hidden]{display:none!important}
+.addf{padding:16px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--accent) 5%,var(--card));display:grid;gap:14px}
+.addf h3{margin:0;font:600 15px var(--ui)}
+.addf .hint{margin:0;color:var(--muted);font-size:13px}
+.fg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.fg .f{display:grid;gap:5px;align-content:start}
+.fg .w2{grid-column:span 2}.fg .w4{grid-column:1/-1}
+.fg label{font:600 11px var(--ui);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fg label i{font-style:normal;color:var(--main)}
+.fg input,.fg select,.fg textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font:500 14px var(--ui);background:var(--field);color:var(--text)}
+.fg textarea{min-height:70px;resize:vertical}
+.fg input[readonly]{background:color-mix(in srgb,var(--text) 5%,var(--field));font-weight:700}
+.fg .chk{display:flex;align-items:center;gap:8px;height:40px;font:600 14px var(--ui);text-transform:none;letter-spacing:0;color:var(--text)}
+.fg .chk input{width:18px;height:18px;accent-color:var(--main)}
+.fg small{color:var(--muted);font-size:12px}
+.fg .bad{border-color:#c0505f;box-shadow:0 0 0 3px #f6dde0}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+@media (max-width:820px){.fg{grid-template-columns:1fr 1fr}.fg .w2{grid-column:1/-1}}
+@media (max-width:820px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.msgs{grid-template-columns:1fr}.msgs > div + div{border-left:0;border-top:1px solid var(--line)}}
+@media print{body{background:#fff;padding:0}.noprint,.tools,.msgsPanel,.edit,.chartPanel{display:none!important}.panel,.tile,.tcard{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script src="demo-data.js"></script><script src="demo-store.js"></script><script>var google = makeGoogleShim(DemoStore);var Q = Object.fromEntries(new URLSearchParams(location.search));</script>
+<script>
+var DATA = DemoStore.dashData(Q.e || "lander-kathrina");
+(function () {
+  var app = document.getElementById('app');
+  if (DATA.error) { app.innerHTML = '<div class="errpage"></div>'; app.firstChild.textContent = DATA.error; return; }
+  var d = DATA.design, ev = DATA.event, st = DATA.stats, filter = 'all', q = '', view = 'guests';
+  var r = document.documentElement.style;
+  r.setProperty('--main', d.main); r.setProperty('--accent', d.accent); r.setProperty('--bg', d.bg); r.setProperty('--text', d.text); r.setProperty('--names', '"' + d.namesFont + '",cursive');
+  var lum = function (h) { var n = parseInt(String(h).slice(1), 16), c = [n >> 16 & 255, n >> 8 & 255, n & 255].map(function (v) { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+  if (lum(d.bg) < 0.25) { r.setProperty('--card', 'color-mix(in srgb,' + d.bg + ' 88%,#fff)'); r.setProperty('--field', 'color-mix(in srgb,' + d.bg + ' 76%,#fff)'); }
+  else if (lum(d.text) > 0.5) { r.setProperty('--text', '#3A272C'); }
+  document.getElementById('fontlink').href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(d.namesFont).replace(/%20/g, '+') + '&family=Inter:wght@400;500;600;700&display=swap';
+  var $ = function (id) { return document.getElementById(id); };
+
+  app.innerHTML =
+    '<div class="top"><div><div class="eyebrow">RSVP dashboard</div><div class="names" id="nm"></div><div class="sub" id="when"></div></div><span class="pill" id="left"></span></div>' +
+    '<div class="tiles">' +
+      tile('Seats reserved', 'seats', 'var(--main)') + tile('Attending', 'attending', '#2f9e5b') + tile('Declined', 'declined', '#a99b9e') +
+      tile('Awaiting reply', 'waiting', '#e0a100') +
+    '</div>' +
+    '<div class="bar"><span id="b1" style="background:#2f9e5b"></span><span id="b2" style="background:#cbbfc1"></span><span id="b3" style="background:#f0c94c"></span></div>' +
+    '<div class="legend"><span><i style="background:#2f9e5b"></i>Attending</span><span><i style="background:#cbbfc1"></i>Declined</span><span><i style="background:#f0c94c"></i>Awaiting reply</span></div>' +
+    '<div class="panel chartPanel" id="chartPanel" hidden><div class="ph"><h2>Replies over time</h2><span class="sub" style="font-size:12.5px" id="chartSub"></span></div><div class="chart" id="chart"></div></div>' +
+
+    // messages
+    '<div class="panel msgsPanel"><div class="ph"><h2>Message your guests</h2><span class="sub" style="font-size:12.5px">Emails are sent from your invitation designer’s RSVP system</span></div>' +
+    '<div class="msgs">' +
+      '<div><h3>Remind guests who haven’t replied</h3><p id="remInfo"></p>' +
+        '<button class="btn" id="remBtn">Send reminder</button><div id="remConfirm" class="confirm" hidden></div><div id="remNote" class="note" hidden></div></div>' +
+      '<div><h3>Send an announcement</h3><p>For updates like a time change, parking details or a dress code reminder.</p>' +
+        '<label for="aud">Send to</label><select id="aud"><option value="attending">Guests who are attending</option><option value="all">Everyone invited (except those who declined)</option></select>' +
+        '<label for="subj">Subject</label><input id="subj" maxlength="120" placeholder="e.g. Reception time update">' +
+        '<label for="body">Message</label><textarea id="body" maxlength="3000" placeholder="Write your message to guests…"></textarea>' +
+        '<button class="btn" id="annBtn">Send announcement</button><div id="annConfirm" class="confirm" hidden></div><div id="annNote" class="note" hidden></div></div>' +
+    '</div></div>' +
+
+    // guests / seating
+    '<div class="panel"><div class="ph"><div class="tabs noprint"><button class="chip" id="vGuests" aria-pressed="true">Guest list</button><button class="chip" id="vSeat" aria-pressed="false">Seating &amp; caterer list</button></div>' +
+    '<div class="tabs noprint"><button class="btn" id="addBtn">+ Add guest</button><button class="btn alt" id="refresh">Refresh</button><button class="btn alt" id="dl">Download list</button><button class="btn" id="print">Print</button></div></div>' +
+    '<div class="addf noprint" id="addForm" hidden><div><h3 id="formTitle">Add a guest</h3><p class="hint">Add one invitation group at a time. Your guest can then find their name on the RSVP page. Fields marked <b style="color:var(--main)">*</b> are required; give at least an email or a mobile number.</p></div>' +
+      '<div class="fg">' +
+        fld('Group name <i>*</i>', 'fGroup', '<input id="fGroup" maxlength="80" placeholder="e.g. Santos family">', 'w2') +
+        fld('Main guest <i>*</i>', 'fMain', '<input id="fMain" maxlength="80" placeholder="Full name, as on the invitation">', 'w2') +
+        fld('Companions (separate with commas)', 'fComp', '<input id="fComp" placeholder="e.g. Paolo Santos, Bea Santos">', 'w2') +
+        fld('Seats', 'fSeats', '<input id="fSeats" readonly value="0" aria-describedby="seatHint"><small id="seatHint">Counted for you</small>', '') +
+        fld('Table no.', 'fTable', '<input id="fTable" maxlength="20" placeholder="Optional">', '') +
+        fld('Email <i>*</i>', 'fEmail', '<input id="fEmail" type="email" maxlength="120" placeholder="For reminders and updates">', 'w2') +
+        fld('Mobile <i>*</i>', 'fMobile', '<input id="fMobile" inputmode="tel" maxlength="30" placeholder="e.g. 0917 555 0101">', '') +
+        '<div class="f"><label>VIP</label><label class="chk"><input type="checkbox" id="fVip"> Mark as VIP</label></div>' +
+        fld('Guest role', 'fRole', '<input id="fRole" list="roleList" maxlength="60" placeholder="e.g. Principal Sponsor"><datalist id="roleList"></datalist>', 'w2') +
+        fld('Notes for couple', 'fNotes', '<input id="fNotes" maxlength="500" placeholder="Private, guests won’t see this">', 'w2') +
+        fld('Message for guest', 'fMsg', '<textarea id="fMsg" maxlength="500" placeholder="Shown to this guest on the RSVP page and in their emails, e.g. You have a reserved seat for the 18 Roses."></textarea>', 'w4') +
+      '</div>' +
+      '<div class="acts"><button class="btn" id="saveBtn">Save guest</button><button class="btn alt" id="saveMore">Save and add another</button><button class="btn alt" id="cancelAdd">Cancel</button><span style="flex:1"></span><button class="btn danger" id="removeBtn" hidden>Remove guest</button></div>' +
+      '<div id="removeConfirm" class="confirm" hidden></div>' +
+      '<div id="addNote" class="note" hidden></div></div>' +
+    '<div id="guestView"><div class="tools"><div class="tabs" id="chips"></div><input class="search" id="q" placeholder="Search a name or group" aria-label="Search guests"></div>' +
+    '<div class="tbl"><table><thead><tr><th>Group</th><th>Seats</th><th>Status</th><th>Attending</th><th>Table</th><th>Last update</th></tr></thead><tbody id="rows"></tbody></table></div></div>' +
+    '<div id="seatView" hidden><div class="caterer" id="caterer"></div><div class="seat" id="seat"></div></div></div>' +
+    '<p class="foot" id="upd"></p>';
+
+  $('nm').textContent = ev.name;
+  $('when').textContent = ev.dateText + (ev.venue ? ' · ' + ev.venue : '');
+
+  function fld(label, id, input, cls) { return '<div class="f ' + (cls || '') + '"><label for="' + id + '">' + label + '</label>' + input + '</div>'; }
+  function tile(k, id, c) { return '<div class="tile" style="--c:' + c + '"><div class="k">' + k + '</div><div class="v" id="t-' + id + '">0</div><div class="s" id="s-' + id + '"></div></div>'; }
+  function cls(s) { return s === 'Attending' ? 'a' : s === 'Partly attending' ? 'p' : s === 'Declined' ? 'd' : 'w'; }
+  function gp(n) { return n + (n === 1 ? ' group' : ' groups'); }
+  function txt(el, t) { el.textContent = t; return el; }
+
+  function paint() {
+    ['seats', 'attending', 'declined', 'waiting'].forEach(function (k) { $('t-' + k).textContent = st[k]; });
+    $('s-seats').textContent = gp(st.groups.length) + ' invited';
+    $('s-attending').textContent = st.seats ? Math.round(st.attending / st.seats * 100) + '% of seats' : '';
+    $('s-declined').textContent = 'seats freed up';
+    $('s-waiting').textContent = gp(st.groupsWaiting) + ' to follow up';
+    var t = st.seats || 1;
+    $('b1').style.width = (st.attending / t * 100) + '%'; $('b2').style.width = (st.declined / t * 100) + '%'; $('b3').style.width = (st.waiting / t * 100) + '%';
+    $('left').textContent = st.daysLeft == null ? '' : st.daysLeft > 0 ? 'RSVP closes in ' + st.daysLeft + (st.daysLeft === 1 ? ' day' : ' days') : st.daysLeft === 0 ? 'RSVP closes today' : 'RSVP closed';
+    $('upd').textContent = 'Updated ' + st.updated;
+
+    // reminder info
+    var R = st.reach;
+    if (!st.rsvpOpen) { $('remInfo').textContent = 'RSVP is closed, so reminders are turned off.'; $('remBtn').disabled = true; }
+    else if (!R.pending) { $('remInfo').textContent = 'Everyone has replied. No reminders needed.'; $('remBtn').disabled = true; }
+    else { $('remInfo').textContent = gp(R.pending) + ' haven’t replied. ' + R.pendingEmail + ' of them ' + (R.pendingEmail === 1 ? 'has' : 'have') + ' an email address and will get a gentle reminder.'; $('remBtn').disabled = !R.pendingEmail; }
+
+    // chips + table
+    var counts = { all: st.groups.length, a: 0, p: 0, d: 0, w: 0 };
+    st.groups.forEach(function (g) { counts[cls(g.status)]++; });
+    var ch = $('chips'); ch.innerHTML = '';
+    [['all', 'All'], ['w', 'Awaiting reply'], ['a', 'Attending'], ['p', 'Partly attending'], ['d', 'Declined']].forEach(function (c) {
+      var b = document.createElement('button'); b.className = 'chip'; b.setAttribute('aria-pressed', filter === c[0]);
+      b.textContent = c[1] + ' (' + counts[c[0]] + ')'; b.onclick = function () { filter = c[0]; paint(); }; ch.appendChild(b);
+    });
+    var body = $('rows'); body.innerHTML = '';
+    var list = st.groups.filter(function (g) {
+      if (filter !== 'all' && cls(g.status) !== filter) return false;
+      return !q || (g.group + ' ' + g.main + ' ' + g.names).toLowerCase().indexOf(q) >= 0;
+    });
+    if (!list.length) body.innerHTML = '<tr><td colspan="6" class="empty">No guests match.</td></tr>';
+    list.forEach(function (g) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td><b></b><span class="rolechip" hidden></span><span class="vip" hidden>VIP</span><small></small><button class="edit noprint" type="button">Edit</button></td><td></td><td><span class="st ' + cls(g.status) + '"></span></td><td></td><td></td><td></td>';
+      var c = tr.children;
+      txt(c[0].querySelector('b'), g.group); txt(c[0].querySelector('small'), g.main);
+      if (g.vip) c[0].querySelector('.vip').hidden = false;
+      if (g.role) { var rc = c[0].querySelector('.rolechip'); rc.textContent = g.role; rc.hidden = false; }
+      txt(c[1], g.seats); txt(c[2].firstChild, g.status);
+      txt(c[3], g.status === 'No reply yet' ? '—' : g.attending);
+      if (g.names) c[3].appendChild(txt(document.createElement('small'), g.names));
+      txt(c[4], g.table || '—'); txt(c[5], g.last || '—');
+      var eb = c[0].querySelector('.edit'); eb.setAttribute('aria-label', 'Edit ' + g.group); eb.onclick = function () { openEdit(g); };
+      body.appendChild(tr);
+    });
+
+    // seating & caterer
+    var cat = $('caterer'); cat.innerHTML = '';
+    var assigned = st.seating.filter(function (s) { return s.table !== 'Unassigned'; }).reduce(function (a, s) { return a + s.total; }, 0);
+    [['Final headcount', st.attending], ['Seated at a table', assigned], ['No table yet', st.attending - assigned], ['Still awaiting reply', st.waiting]].forEach(function (x) {
+      var dv = document.createElement('div'); dv.appendChild(txt(document.createElement('b'), x[1])); dv.appendChild(document.createTextNode(' ' + x[0])); cat.appendChild(dv);
+    });
+    var seat = $('seat'); seat.innerHTML = '';
+    if (!st.seating.length) seat.innerHTML = '<div class="empty">No confirmed guests yet.</div>';
+    st.seating.forEach(function (s) {
+      var none = s.table === 'Unassigned';
+      var c = document.createElement('div'); c.className = 'tcard' + (none ? ' none' : '');
+      // round table drawing: one dot per confirmed guest around the table
+      var rt = document.createElement('div'); rt.className = 'rt';
+      rt.setAttribute('role', 'img'); rt.setAttribute('aria-label', (none ? 'No table yet' : 'Table ' + s.table) + ', ' + s.total + (s.total === 1 ? ' guest' : ' guests'));
+      var top = document.createElement('div'); top.className = 'rtop';
+      var inner = document.createElement('div');
+      inner.appendChild(txt(document.createElement('b'), none ? 'No table' : s.table));
+      inner.appendChild(txt(document.createElement('small'), s.total + (s.total === 1 ? ' guest' : ' guests')));
+      top.appendChild(inner); rt.appendChild(top);
+      var dots = []; s.groups.forEach(function (g) { for (var i = 0; i < g.count; i++) dots.push(!!g.vip); });
+      var n = Math.min(dots.length, 16);
+      for (var i = 0; i < n; i++) {
+        var a = (i / n) * 2 * Math.PI - Math.PI / 2, d = document.createElement('span');
+        d.className = 'st8' + (dots[i] ? ' vipd' : '');
+        d.style.left = (80 + 68 * Math.cos(a)) + 'px'; d.style.top = (80 + 68 * Math.sin(a)) + 'px';
+        rt.appendChild(d);
+      }
+      c.appendChild(rt);
+      s.groups.forEach(function (g) {
+        var row = document.createElement('div'); row.className = 'who'; row.textContent = g.names.join(', ') + ' ';
+        row.appendChild(txt(document.createElement('small'), '(' + g.group + (g.role ? ', ' + g.role : '') + (g.vip ? ', VIP' : '') + ')')); c.appendChild(row);
+      });
+      seat.appendChild(c);
+    });
+
+    // replies over time
+    drawChart();
+  }
+
+  function drawChart() {
+    var tl = st.timeline || [], box = $('chart');
+    $('chartPanel').hidden = tl.length < 1;
+    if (!tl.length) return;
+    var W = 640, H = 170, L = 30, B = 26, T = 10, Rr = 8;
+    var max = Math.max.apply(null, tl.map(function (x) { return x.total; })), maxN = Math.max.apply(null, tl.map(function (x) { return x.n; }));
+    var top = Math.max(max, 1), bw = Math.max(4, Math.min(28, (W - L - Rr) / tl.length * 0.6));
+    var X = function (i) { return L + (tl.length === 1 ? (W - L - Rr) / 2 : i * (W - L - Rr - bw) / (tl.length - 1) + bw / 2); };
+    var Y = function (v) { return T + (H - T - B) * (1 - v / top); };
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Groups that have replied over time">';
+    [0, 0.5, 1].forEach(function (f) { var v = Math.round(top * f), y = Y(v); svg += '<line x1="' + L + '" x2="' + (W - Rr) + '" y1="' + y + '" y2="' + y + '" stroke="currentColor" stroke-opacity=".12"/><text x="' + (L - 6) + '" y="' + (y + 4) + '" text-anchor="end" font-size="11" fill="currentColor" fill-opacity=".55">' + v + '</text>'; });
+    tl.forEach(function (x, i) { var h = (H - T - B) * x.n / top; svg += '<rect x="' + (X(i) - bw / 2) + '" y="' + (H - B - h) + '" width="' + bw + '" height="' + h + '" rx="3" fill="var(--accent)" fill-opacity=".55"><title>' + x.day + ': ' + x.n + ' new ' + (x.n === 1 ? 'reply' : 'replies') + '</title></rect>'; });
+    svg += '<polyline fill="none" stroke="var(--main)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="' + tl.map(function (x, i) { return X(i) + ',' + Y(x.total); }).join(' ') + '"/>';
+    tl.forEach(function (x, i) { svg += '<circle cx="' + X(i) + '" cy="' + Y(x.total) + '" r="3.5" fill="var(--main)"><title>' + x.day + ': ' + x.total + ' replied so far</title></circle>'; });
+    var step = Math.ceil(tl.length / 7);
+    tl.forEach(function (x, i) { if (i % step === 0 || i === tl.length - 1) svg += '<text x="' + X(i) + '" y="' + (H - 7) + '" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity=".55">' + x.day + '</text>'; });
+    box.innerHTML = '<div class="cap"><span><b style="color:var(--main)">━</b> Groups replied so far &nbsp; <b style="color:var(--accent)">▮</b> New replies that day</span></div>' + svg + '</svg>';
+    var replied = st.groups.filter(function (g) { return g.status !== 'No reply yet'; }).length;
+    $('chartSub').textContent = replied + ' of ' + gp(st.groups.length) + ' have replied';
+  }
+  paint();
+
+  // download guest list (opens in Excel or Google Sheets)
+  $('dl').onclick = function () {
+    var head = ['Group', 'Main guest', 'Companions', 'Seats', 'Status', 'Attending', 'Attending names', 'Table', 'Guest role', 'VIP', 'Email', 'Mobile', 'Notes', 'Last update'];
+    var esc = function (v) { v = String(v == null ? '' : v); if (/^[=+\-@]/.test(v)) v = "'" + v; return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var lines = [head].concat(st.groups.map(function (g) {
+      return [g.group, g.main, g.companions, g.seats, g.status, g.attending, g.names, g.table, g.role, g.vip ? 'Yes' : '', g.email, g.mobile, g.notes, g.last];
+    })).map(function (r) { return r.map(esc).join(','); });
+    var name = (ev.name || 'guest-list').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') + '-guest-list.csv';
+    try {
+      var url = URL.createObjectURL(new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' }));
+      var a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+    } catch (e) { alertNote('Your browser blocked the download. Try again from Chrome or Safari.'); }
+  };
+  function alertNote(t) { $('upd').textContent = t; }
+
+  // view tabs
+  function setView(v) { view = v; $('guestView').hidden = v !== 'guests'; $('seatView').hidden = v !== 'seat'; $('vGuests').setAttribute('aria-pressed', v === 'guests'); $('vSeat').setAttribute('aria-pressed', v === 'seat'); }
+  $('vGuests').onclick = function () { setView('guests'); };
+  $('vSeat').onclick = function () { setView('seat'); };
+  $('q').addEventListener('input', function (e) { q = e.target.value.trim().toLowerCase(); paint(); });
+  $('print').onclick = function () { window.print(); };
+  function refresh(cb) {
+    google.script.run.withSuccessHandler(function (s) { st = s; paint(); cb && cb(); }).withFailureHandler(function () { cb && cb(); }).getDashboard(ev.code, DATA.key);
+  }
+  $('refresh').onclick = function () { var b = this; b.textContent = 'Refreshing…'; b.disabled = true; refresh(function () { b.textContent = 'Refresh'; b.disabled = false; }); };
+
+  // add guest
+  (DATA.roles || []).forEach(function (r) { var o = document.createElement('option'); o.value = r; $('roleList').appendChild(o); });
+  function seatCount() { var m = $('fMain').value.trim() ? 1 : 0; return m + $('fComp').value.split(',').filter(function (x) { return x.trim(); }).length; }
+  $('fMain').addEventListener('input', function () { $('fSeats').value = seatCount(); });
+  $('fComp').addEventListener('input', function () { $('fSeats').value = seatCount(); });
+  function clearForm() { ['fGroup', 'fMain', 'fComp', 'fTable', 'fEmail', 'fMobile', 'fRole', 'fNotes', 'fMsg'].forEach(function (id) { $(id).value = ''; }); $('fVip').checked = false; $('fSeats').value = 0; }
+  var editId = '';
+  function formMode(id) {
+    editId = id || '';
+    $('formTitle').textContent = editId ? 'Edit guest' : 'Add a guest';
+    $('saveBtn').textContent = editId ? 'Save changes' : 'Save guest';
+    $('saveMore').hidden = !!editId; $('removeBtn').hidden = !editId; $('removeConfirm').hidden = true;
+  }
+  $('addBtn').onclick = function () { clearForm(); formMode(''); setView('guests'); $('addForm').hidden = false; $('addNote').hidden = true; $('fMain').focus(); };
+  $('cancelAdd').onclick = function () { $('addForm').hidden = true; clearForm(); formMode(''); };
+  function openEdit(g) {
+    formMode(g.id); setView('guests');
+    $('fGroup').value = g.group || ''; $('fMain').value = g.main || ''; $('fComp').value = g.companions || '';
+    $('fTable').value = g.table || ''; $('fEmail').value = g.email || ''; $('fMobile').value = g.mobile || '';
+    $('fVip').checked = !!g.vip; $('fRole').value = g.role || ''; $('fNotes').value = g.notes || ''; $('fMsg').value = g.message || '';
+    $('fSeats').value = seatCount(); $('addNote').hidden = true; $('addForm').hidden = false;
+    $('addForm').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('fMain').focus({ preventScroll: true });
+  }
+  $('removeBtn').onclick = function () {
+    var g = st.groups.filter(function (x) { return x.id === editId; })[0]; if (!g) return;
+    var box = $('removeConfirm');
+    ask(box, 'Remove ' + g.group + ' (' + g.seats + (g.seats === 1 ? ' seat' : ' seats') + ') from your guest list?' + (g.status !== 'No reply yet' ? ' They have already replied.' : ''), function () {
+      var b = $('removeBtn'); b.disabled = true; b.textContent = 'Removing…';
+      google.script.run.withSuccessHandler(function (res) {
+        b.disabled = false; b.textContent = 'Remove guest';
+        st = res.stats; paint(); clearForm(); formMode(''); $('addForm').hidden = true;
+        $('upd').textContent = res.group + ' was removed. Updated ' + st.updated;
+      }).withFailureHandler(function (e) { b.disabled = false; b.textContent = 'Remove guest'; note($('addNote'), false, (e && e.message) || 'Could not remove. Please try again.'); })
+        .coupleRemoveGuest(ev.code, DATA.key, editId);
+    }, 'Yes, remove');
+  };
+  function save(more) {
+    var g = { id: editId, group: $('fGroup').value, main: $('fMain').value, companions: $('fComp').value, table: $('fTable').value, email: $('fEmail').value,
+      mobile: $('fMobile').value, vip: $('fVip').checked, role: $('fRole').value, notes: $('fNotes').value, message: $('fMsg').value };
+    ['fGroup', 'fMain', 'fEmail', 'fMobile'].forEach(function (id) { $(id).classList.remove('bad'); });
+    var miss = [];
+    if (!g.group.trim()) miss.push(['fGroup', 'group name']);
+    if (!g.main.trim()) miss.push(['fMain', 'main guest']);
+    if (!g.email.trim() && !g.mobile.trim()) miss.push(['fEmail', 'email or mobile'], ['fMobile', '']);
+    if (g.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g.email.trim())) miss.push(['fEmail', 'a valid email']);
+    if (g.mobile.trim() && g.mobile.replace(/\D/g, '').length < 10) miss.push(['fMobile', 'a valid mobile number']);
+    if (miss.length) {
+      miss.forEach(function (m) { $(m[0]).classList.add('bad'); });
+      note($('addNote'), false, 'Please add: ' + miss.map(function (m) { return m[1]; }).filter(String).join(', ') + '.');
+      $(miss[0][0]).focus(); return;
+    }
+    var btns = [$('saveBtn'), $('saveMore')]; btns.forEach(function (b) { b.disabled = true; }); $('saveBtn').textContent = 'Saving…';
+    var done = false;
+    function reset() { done = true; clearTimeout(timer); btns.forEach(function (b) { b.disabled = false; }); $('saveBtn').textContent = editId ? 'Save changes' : 'Save guest'; }
+    var timer = setTimeout(function () { if (!done) { reset(); note($('addNote'), false, 'This is taking too long. Tap Refresh to check if the guest was added before trying again.'); } }, 45000);
+    try {
+    google.script.run.withSuccessHandler(function (res) {
+      if (done) { refresh(); return; } reset();
+      st = res.stats; paint(); clearForm();
+      note($('addNote'), true, res.edited ? res.group + ' updated.' : res.group + ' added (' + res.seats + (res.seats === 1 ? ' seat' : ' seats') + '). They can now RSVP.');
+      if (res.edited) formMode('');
+      if (more) $('fMain').focus(); else setTimeout(function () { $('addForm').hidden = true; }, 2500);
+    }).withFailureHandler(function (e) {
+      if (done) return; reset();
+      note($('addNote'), false, (e && e.message) || 'Could not save. Please try again.');
+    }).coupleSaveGuest(ev.code, DATA.key, g);
+    } catch (err) { reset(); note($('addNote'), false, 'This page is out of date. Please reload it and try again.'); }
+  }
+  $('saveBtn').onclick = function () { save(false); };
+  $('saveMore').onclick = function () { save(true); };
+
+  // confirm helper (in-page, no browser dialogs)
+  function ask(box, text, onYes, yesLabel) {
+    box.innerHTML = ''; box.hidden = false;
+    box.appendChild(document.createTextNode(text + ' '));
+    var y = document.createElement('button'); y.className = 'btn'; y.textContent = yesLabel || 'Yes, send';
+    var n = document.createElement('button'); n.className = 'btn alt'; n.textContent = 'Cancel';
+    y.onclick = function () { box.hidden = true; onYes(); }; n.onclick = function () { box.hidden = true; };
+    box.appendChild(y); box.appendChild(n);
+  }
+  function note(el, ok, text) { el.className = 'note ' + (ok ? 'ok' : 'err'); el.textContent = text; el.hidden = false; }
+
+  $('remBtn').onclick = function () {
+    $('remNote').hidden = true;
+    ask($('remConfirm'), 'Send a reminder to ' + gp(st.reach.pendingEmail) + '?', function () {
+      var b = $('remBtn'); b.disabled = true; b.textContent = 'Sending…';
+      google.script.run.withSuccessHandler(function (res) {
+        b.textContent = 'Send reminder';
+        var t = res.sent + ' reminder' + (res.sent === 1 ? '' : 's') + ' sent.';
+        if (res.recent) t += ' ' + res.recent + ' already got one today.';
+        if (res.noEmail) t += ' ' + gp(res.noEmail) + ' without email, so message them directly.';
+        note($('remNote'), true, t); refresh();
+      }).withFailureHandler(function (e) { b.textContent = 'Send reminder'; b.disabled = false; note($('remNote'), false, e.message || 'Could not send. Please try again.'); })
+        .coupleSendReminders(ev.code, DATA.key);
+    });
+  };
+
+  $('annBtn').onclick = function () {
+    $('annNote').hidden = true;
+    var subj = $('subj').value.trim(), body = $('body').value.trim(), aud = $('aud').value;
+    if (!subj || !body) { note($('annNote'), false, 'Please add a subject and a message.'); return; }
+    var n = aud === 'all' ? st.reach.invitedEmail : st.reach.attendingEmail;
+    if (!n) { note($('annNote'), false, 'None of these guests have an email address yet.'); return; }
+    ask($('annConfirm'), 'Send this announcement to ' + gp(n) + '?', function () {
+      var b = $('annBtn'); b.disabled = true; b.textContent = 'Sending…';
+      google.script.run.withSuccessHandler(function (res) {
+        b.disabled = false; b.textContent = 'Send announcement';
+        note($('annNote'), true, 'Announcement sent to ' + gp(res.sent) + '.' + (res.noEmail ? ' ' + gp(res.noEmail) + ' without email, so message them directly.' : ''));
+        $('subj').value = ''; $('body').value = '';
+      }).withFailureHandler(function (e) { b.disabled = false; b.textContent = 'Send announcement'; note($('annNote'), false, e.message || 'Could not send. Please try again.'); })
+        .coupleSendAnnouncement(ev.code, DATA.key, aud, subj, body);
+    });
+  };
+})();
+</script>
+<script>(function(){var t;var off=DemoStore.on(function(w){if(w==="guests")return;clearTimeout(t);t=setTimeout(function(){var b=document.getElementById("refresh");if(b)b.click();},300);});window.addEventListener("pagehide",off);})();</script>
+</body>
+</html>
