@@ -551,8 +551,10 @@ footer{padding:40px 0 120px;text-align:center;color:var(--muted);font-size:13px}
   }
   function setPressed(id, v) { $(id).querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.v === v ? 'true' : 'false'); }); }
   function tryName(name, mode) {
+    var tries = 0;
     var go = function () {
-      var doc = $('gPhone').contentDocument; if (!doc) return;
+      var doc = $('gPhone').contentDocument;
+      if (!doc || !doc.getElementById('nameInput') || doc.readyState !== 'complete') { if (tries++ < 20) setTimeout(go, 250); return; }
       var inp = doc.getElementById('nameInput'), btn = doc.getElementById('findBtn');
       if (!inp || !btn || inp.offsetParent === null) { var back = doc.getElementById('backBtn') || doc.getElementById('tAgain'); if (back && back.offsetParent !== null) back.click(); }
       inp = doc.getElementById('nameInput');
